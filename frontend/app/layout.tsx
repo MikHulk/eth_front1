@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Rubik, /* Inter */ } from 'next/font/google'
+import { Container } from "@chakra-ui/react"
 import Provider from './providers'
 import Navbar from './navbar'
 
@@ -25,8 +26,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={fonts.rubik.className}>
         <Provider>
-          <Navbar />
-          { children }
+          <Container maxW="900px">
+            <Navbar />
+            { children }
+          </Container>
         </Provider>
       </body>
     </html>
