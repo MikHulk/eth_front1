@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { localhost } from 'viem/chains'
 import { publicClient } from './eth'
-import { Box, Card, Input } from "@chakra-ui/react"
+import { Box, Card, Input, InputGroup, InputLeftAddon } from "@chakra-ui/react"
 
 
 export default function Home() {
@@ -13,6 +13,10 @@ export default function Home() {
 
   const client = publicClient
 
+  const addrRegEx = /^0x[A-z0-9]{40}$/g
+  const addressIsValid = () => address.match(addrRegEx)
+    
+  
   useEffect(() => {
     const getBal = async () => {
       let bal = await client.getBalance(
@@ -22,8 +26,8 @@ export default function Home() {
       )
       setBal(Number(bal))
     }
-    if(address.length == 42) 
-      getBal()
+    if(addressIsValid())
+      getBal().then(null, console.log)
   }, [address])
   
   const formatBal = () : String => {
@@ -40,17 +44,31 @@ export default function Home() {
   
   return (
     <main p={5}>
-      <Box  display="flex" alignItems="center" w="100%" justifyContent="center">
+      <Box
+        display="flex"
+        alignItems="center"
+        w="100%"
+        justifyContent="center"
+      >
         <Card w="66%" mt={5} p={2}>
           <Box p={1} alignSelf="center">
-            <Input
-              ref={ref}
+            <InputGroup
               h={10}
-              w={500}
-              justifyContent="center"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}>
-            </Input>
+              w={515}
+              justifyContent="center">
+              <InputLeftAddon>
+                Address
+              </InputLeftAddon>
+              <Input
+                errorBorderColor='red.300'
+                isInvalid={!addressIsValid()}
+                ref={ref}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                focusBorderColor={addressIsValid() ? "green.400" : "orange.300"}
+              >
+              </Input>
+            </InputGroup>
           </Box>
           <Box p={1} alignSelf="center">
             Balance: {formatBal()}
