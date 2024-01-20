@@ -6,7 +6,7 @@ import { publicClient } from './eth'
 import { Box, Card, Input, InputGroup, InputLeftAddon } from "@chakra-ui/react"
 
 
-export default function Home() {
+export default function Home() : React.ReactNode {
   const [address, setAddress] = useState("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
   const [bal, setBal] = useState(0)
   const ref = useRef(null)
@@ -14,8 +14,8 @@ export default function Home() {
   const client = publicClient
 
   const addrRegEx = /^0x[A-z0-9]{40}$/g
-  const addressIsValid = () => address.match(addrRegEx)
-  
+  const addressIsValid = () : Bool => address.match(addrRegEx)
+      
   useEffect(() => {
     const getBal = async () => {
       let bal = await client.getBalance(
