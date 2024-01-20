@@ -15,7 +15,6 @@ export default function Home() {
 
   const addrRegEx = /^0x[A-z0-9]{40}$/g
   const addressIsValid = () => address.match(addrRegEx)
-    
   
   useEffect(() => {
     const getBal = async () => {
