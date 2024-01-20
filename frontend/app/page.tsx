@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { localhost } from 'viem/chains'
-import { publicClient } from './eth';
+import { publicClient } from './eth'
+import { Box } from "@chakra-ui/react"
 
 
 export default function Home() {
@@ -13,21 +14,15 @@ export default function Home() {
 
   useEffect(() => {
     const getBal = async () => {
-      try {
-        let bal = await client.getBalance(
-          {
-            address: address,
-          }
-        )
-        console.log(bal)
-        setBal(Number(bal))
-      } catch (e: unknown)  {
-        if (e instanceof ChainNotConfiguredError) {
-          console.warn(e.message)
-        } else {console.error(e)}      
-      }
+      let bal = await client.getBalance(
+        {
+          address: address,
+        }
+      )
+      setBal(Number(bal))
     }
-    getBal()
+    if(address.length == 42) 
+      getBal()
   }, [address])
   
   const formatBal = () : String => {
@@ -40,16 +35,16 @@ export default function Home() {
   
   return (
     <main style={{ height: '100%', padding: '5px' }}>
-      <div>
+      <Box>
         <input
           style={{width: '27em'}}
           value={address}
           onChange={(e) => setAddress(e.target.value)}>
         </input>
-      </div>
-      <div>
+      </Box>
+      <Box>
         {formatBal()}
-      </div>
+      </Box>
     </main>
   );
 }
