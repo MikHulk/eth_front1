@@ -2,7 +2,7 @@ import {Tabs, TabList, Tab} from "@chakra-ui/react"
 
 export default function NavBar() : React.ReactNode {
    return (
-     <Tabs>
+     <Tabs colorScheme='green'>
        <TabList>
          <Tab>
            Home
