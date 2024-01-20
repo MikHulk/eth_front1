@@ -1,19 +1,28 @@
-import {Tabs, TabList, Tab} from "@chakra-ui/react"
+"use client"
+
+import {Button, ButtonGroup, Link} from "@chakra-ui/react"
+import {NextLink} from "next/link"
+import { usePathname, useRouter } from 'next/navigation'
+
+const width = 90
 
 export default function NavBar() : React.ReactNode {
-   return (
-     <Tabs colorScheme='green'>
-       <TabList>
-         <Tab>
-           Home
-         </Tab>
-         <Tab>
-           Other
-         </Tab>
-         <Tab>
-           Etc...
-         </Tab>
-       </TabList>
-     </Tabs>
+  const links = [
+    ["/", "Home"],
+    ["/bank", "Bank"],
+  ];
+  const router = useRouter()
+  return (
+     <ButtonGroup bg="gray.700" variant="ghost" pl={1} colorScheme='green' display="flex">
+       {
+         links.map(
+           ([link, title], ind) =>(
+             <Button key={ind} w={width} onClick={() => router.push(link)}>
+               {title}
+             </Button>
+           )
+         )
+       }
+     </ButtonGroup>
    )
 }

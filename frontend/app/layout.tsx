@@ -1,16 +1,7 @@
 import type { Metadata } from 'next'
-import { Rubik, /* Inter */ } from 'next/font/google'
 import { Container } from "@chakra-ui/react"
 import Provider from './providers'
 import Navbar from './navbar'
-
-
-const rubik = Rubik({ subsets: ['latin'], variable: '--font-rubik' })
-// const inter = Inter({ subsets: ['latin'] })
-
-const fonts = {
-  rubik,
-}
 
 export const metadata: Metadata = {
   title: 'Test',
@@ -24,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={fonts.rubik.className}>
+      <body>
         <Provider>
           <Container maxW="900px">
             <Navbar />

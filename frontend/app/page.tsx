@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from "react"
 import { localhost } from 'viem/chains'
-import { publicClient } from './eth'
 import { Box, Card, Input, InputGroup, InputLeftAddon } from "@chakra-ui/react"
+
+import { publicClient } from './eth'
 
 
 export default function Home() : React.ReactNode {
