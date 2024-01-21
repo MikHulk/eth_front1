@@ -1,74 +1,69 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import {parseEther} from 'viem'
-import {privateKeyToAccount} from 'viem/accounts'
-import {
-  Box,
-  Button,
-  Card,
-  Heading,
-} from "@chakra-ui/react"
+import { useState, useEffect } from "react";
+import { parseEther } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { Box, Button, Card, Heading } from "@chakra-ui/react";
 
-import InputGroup from '../inputs'
+import { bankAbi } from "./abi";
+import InputGroup from "../inputs";
 import {
   publicClient,
   addressIsValid,
   privAddrIsValid,
   formatBal,
   walletClient,
-} from '../eth'
+} from "../eth";
 
+export default function Bank(): React.ReactNode {
+  const bankAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+  const [bankBal, setBankBal] = useState(0);
+  const [addr, setAddr] = useState("");
 
-export default function Bank() : React.ReactNode {
-  const bankAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3"
-  const [bankBal, setBankBal] = useState(0)
-  const [addr, setAddr] = useState("")
-
-  useEffect(() => {
-    const getBal = async () => {
-      let bal = await publicClient.getBalance(
-        {
-          address: bankAddress,
-        }
-      )
-      setBankBal(Number(bal))
-    }
-    if(addressIsValid(bankAddress))
-      getBal().then(null, console.log)
-  }, [])
+  const getBal = async () => {
+    return await publicClient.getBalance({
+      address: bankAddress,
+    });
+  };
 
   useEffect(() => {
-    if(privAddrIsValid(addr)) console.log(addr)
-  }, [addr])
+    if (addressIsValid(bankAddress))
+      getBal().then((n) => setBankBal(Number(n)), console.log);
+  }, []);
+
+  useEffect(() => {
+    if (privAddrIsValid(addr)) console.log(addr);
+  }, [addr]);
 
   function sendMoney() {
     const send = async () => {
       // @ts-ignore
-      const account = privateKeyToAccount(addr)
-      return await walletClient.sendTransaction({
+      const account = privateKeyToAccount(addr);
+      const { request } = await publicClient.simulateContract({
         account,
-        to: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        value: parseEther('1')
-      })
-    }
-    if(privAddrIsValid(addr)) {
-      send().then(console.log, console.error)
-      setAddr("")
+        address: bankAddress,
+        abi: bankAbi,
+        functionName: "sendEthers",
+        value: parseEther("1"),
+      });
+      return await walletClient.writeContract(request);
+    };
+    if (privAddrIsValid(addr)) {
+      send().then(console.log, console.error);
+      setTimeout(function () {
+        getBal().then((n) => setBankBal(Number(n)), console.error);
+      }, 2000);
+      setAddr("");
     }
   }
 
-  const inputInvalid = addr.length != 0 && !privAddrIsValid(addr)
+  const inputInvalid = addr.length != 0 && !privAddrIsValid(addr);
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      w="100%"
-      justifyContent="center"
-    >
-      <Card w="75%" mt={5} p={2}>
+    <Box display="flex" alignItems="center" w="100%" justifyContent="center">
+      <Card w="100%" mt={3} p={2}>
         <Box p={1} alignSelf="center" m={2}>
-          <Box display="flex"
+          <Box
+            display="flex"
             flexDir="column"
             alignSelf="center"
             alignItems="center"
@@ -77,7 +72,9 @@ export default function Bank() : React.ReactNode {
             mb={5}
           >
             <Heading fontSize={20}>GanstaBank</Heading>
-            <p><i>la bank des gangsters</i></p>
+            <p>
+              <i>la bank des gangsters</i>
+            </p>
           </Box>
           <p>établissement sis {bankAddress}</p>
           <p>Balance de la bank: {formatBal(bankBal)}</p>
@@ -90,7 +87,6 @@ export default function Bank() : React.ReactNode {
               value={addr}
               onChange={(e: any) => setAddr(e.target.value)}
               isInvalid={inputInvalid}
-              autoComplete="off"
               fontFamily={addr.length > 0 ? "password" : undefined}
               focusBorderColor={inputInvalid ? "orange.300" : "green.400"}
             />
@@ -99,7 +95,8 @@ export default function Bank() : React.ReactNode {
             display="flex"
             alignSelf="center"
             alignItems="center"
-            justifyContent="center">
+            justifyContent="center"
+          >
             <Button m={2} onClick={sendMoney}>
               Envoie nous des sous
             </Button>
@@ -107,5 +104,5 @@ export default function Bank() : React.ReactNode {
         </Box>
       </Card>
     </Box>
-  )
+  );
 }
