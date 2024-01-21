@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { getAddress } from 'viem'
 import { Box, Card } from "@chakra-ui/react"
 
-import { publicClient, addressIsValid } from './eth'
+import { publicClient, addressIsValid, formatBal } from './eth'
 import InputGroup from './inputs'
 
 
@@ -27,14 +27,6 @@ export default function Home() : React.ReactNode {
     if(addressIsValid(address))
       getBal().then(null, console.log)
   }, [address])
-  
-  const formatBal = () : String => {
-    if (bal > Math.pow(10, 18)) {
-      return bal * Math.pow(10, -18) + " ether"
-    } else if (bal > Math.pow(10, 9)) {
-      return bal * Math.pow(10, -9) + " gwei"
-    } else { return bal + " wei" }
-  }
 
   useEffect(() => {
     ref.current?.focus()
@@ -62,7 +54,7 @@ export default function Home() : React.ReactNode {
             />
           </Box>
           <Box p={1} alignSelf="center">
-            Balance: {formatBal()}
+            Balance: {formatBal(bal)}
           </Box>
         </Card>
       </Box>

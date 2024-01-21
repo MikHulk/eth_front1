@@ -11,3 +11,12 @@ export const publicClient = createPublicClient({
       chain: chain,
       transport: http()
 })
+
+  
+export const formatBal = (bal: number) : String => {
+  if (bal > Math.pow(10, 18)) {
+    return bal * Math.pow(10, -18) + " ether"
+  } else if (bal > Math.pow(10, 9)) {
+    return bal * Math.pow(10, -9) + " gwei"
+  } else { return bal + " wei" }
+}

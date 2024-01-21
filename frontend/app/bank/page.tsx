@@ -4,10 +4,11 @@ import { useState, useEffect } from "react"
 import {
   Box,
   Card,
+  Heading,
 } from "@chakra-ui/react"
 
 import InputGroup from '../inputs'
-import { publicClient, addressIsValid } from '../eth'
+import { publicClient, addressIsValid, formatBal } from '../eth'
 
 
 export default function Bank() : React.ReactNode {
@@ -34,17 +35,29 @@ export default function Bank() : React.ReactNode {
       w="100%"
       justifyContent="center"
     >
-      <Card w="66%" mt={5} p={2}>
-        <Box p={1} alignSelf="center">
-          <p>Salut Gros</p>
-          <p>{bankAddress}</p>
-          <p>{bankBal}</p>
-          <InputGroup
-            label="Address"
-            h={10}
-            w={515}
-            placeholder="rentre ton adress privé ici gros tkt ;-)"
-          />
+      <Card w="75%" mt={5} p={2}>
+        <Box p={1} alignSelf="center"  m={2}>
+          <Box display="flex"
+            flexDir="column"
+            alignSelf="center"
+            alignItems="center"
+            justifyContent="center"
+            color="green.200"
+            mb={5}
+          >
+            <Heading fontSize={20}>GanstaBank</Heading>
+            <p><i>la bank des gangsters</i></p>
+          </Box>
+          <p>établissement sis {bankAddress}</p>
+          <p>Balance de la bank: {formatBal(bankBal)}</p>
+          <Box  mt={3}>
+            <InputGroup
+              label="Address"
+              h={10}
+              w={615}
+              placeholder="rentre ton adress privé ici gros tkt ;-)"
+            />
+          </Box>
         </Box>
       </Card>
     </Box>
