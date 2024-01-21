@@ -1,32 +1,30 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { localhost } from 'viem/chains'
-import { Box, Card, Input, InputGroup, InputLeftAddon } from "@chakra-ui/react"
+import { getAddress } from 'viem'
+import { Box, Card } from "@chakra-ui/react"
 
-import { publicClient } from './eth'
+import { publicClient, addressIsValid } from './eth'
+import InputGroup from './inputs'
 
 
 export default function Home() : React.ReactNode {
   const [address, setAddress] = useState("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
   const [bal, setBal] = useState(0)
-  const ref = useRef(null)
+  const ref = useRef<HTMLInputElement | null>(null)
 
   const client = publicClient
-
-  const addrRegEx = /^0x[A-z0-9]{40}$/g
-  const addressIsValid = () : Bool => address.match(addrRegEx)
       
   useEffect(() => {
     const getBal = async () => {
       let bal = await client.getBalance(
         {
-          address: address,
+          address: getAddress(address),
         }
       )
       setBal(Number(bal))
     }
-    if(addressIsValid())
+    if(addressIsValid(address))
       getBal().then(null, console.log)
   }, [address])
   
@@ -39,11 +37,11 @@ export default function Home() : React.ReactNode {
   }
 
   useEffect(() => {
-    ref.current.focus()
+    ref.current?.focus()
   }, [])
   
   return (
-    <main p={5}>
+    <main>
       <Box
         display="flex"
         alignItems="center"
@@ -55,20 +53,13 @@ export default function Home() : React.ReactNode {
             <InputGroup
               h={10}
               w={515}
-              justifyContent="center">
-              <InputLeftAddon>
-                Address
-              </InputLeftAddon>
-              <Input
-                errorBorderColor='red.300'
-                isInvalid={!addressIsValid()}
-                ref={ref}
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                focusBorderColor={addressIsValid() ? "green.400" : "orange.300"}
-              >
-              </Input>
-            </InputGroup>
+              label="Address"
+              ref={ref}
+              isInvalid={!addressIsValid(address)}
+              value={address}
+              onChange={(e: any) => setAddress(e.target.value)}
+              focusBorderColor={addressIsValid(address) ? "green.400" : "orange.300"}
+            />
           </Box>
           <Box p={1} alignSelf="center">
             Balance: {formatBal()}
