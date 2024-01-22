@@ -1,4 +1,4 @@
-import { createWalletClient, createPublicClient, http } from "viem";
+import { createWalletClient, createPublicClient, http, webSocket } from "viem";
 import { localhost, mainnet } from "viem/chains";
 
 const chain = process.env.NEXT_PUBLIC_ETH_LOCAL ? localhost : mainnet;
@@ -29,4 +29,13 @@ export const formatBal = (bal: number): String => {
 export const walletClient = createWalletClient({
   chain: chain,
   transport: http(),
+});
+
+const ws = process.env.NEXT_PUBLIC_ETH_LOCAL
+  ? webSocket("ws://localhost:8545")
+  : webSocket("wss://eth-mainnet.ws.g.alchemy.com/v2/demo");
+
+export const wsClient = createPublicClient({
+  chain,
+  transport: ws,
 });

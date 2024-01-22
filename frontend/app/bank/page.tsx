@@ -8,7 +8,7 @@ import { Box, Button, Card, Heading } from "@chakra-ui/react";
 import { bankAbi } from "./abi";
 import InputGroup from "../inputs";
 import {
-  publicClient,
+  wsClient,
   addressIsValid,
   privAddrIsValid,
   formatBal,
@@ -21,7 +21,7 @@ export default function Bank(): React.ReactNode {
   const [addr, setAddr] = useState("");
 
   const getBal = async () => {
-    return await publicClient.getBalance({
+    return await wsClient.getBalance({
       address: bankAddress,
     });
   };
@@ -39,7 +39,7 @@ export default function Bank(): React.ReactNode {
     const send = async () => {
       // @ts-ignore
       const account = privateKeyToAccount(addr);
-      const { request } = await publicClient.simulateContract({
+      const { request } = await wsClient.simulateContract({
         account,
         address: bankAddress,
         abi: bankAbi,

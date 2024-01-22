@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { getAddress } from "viem";
 import { Box, Card } from "@chakra-ui/react";
 
-import { publicClient, addressIsValid, formatBal } from "./eth";
+import { wsClient, addressIsValid, formatBal } from "./eth";
 import InputGroup from "./inputs";
 
 export default function Home(): React.ReactNode {
@@ -14,7 +14,7 @@ export default function Home(): React.ReactNode {
   const [bal, setBal] = useState(0);
   const ref = useRef<HTMLInputElement | null>(null);
 
-  const client = publicClient;
+  const client = wsClient;
 
   useEffect(() => {
     const getBal = async () => {
