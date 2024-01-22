@@ -8,12 +8,15 @@ import { Box, Button, Card, Heading } from "@chakra-ui/react";
 import { bankAbi } from "./abi";
 import InputGroup from "../inputs";
 import {
-  wsClient,
+  getWsClient,
   addressIsValid,
   privAddrIsValid,
   formatBal,
-  walletClient,
+  getWalletClient,
 } from "../eth";
+
+const wsClient = getWsClient();
+const walletClient = getWalletClient();
 
 export default function Bank(): React.ReactNode {
   const bankAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
