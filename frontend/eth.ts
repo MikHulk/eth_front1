@@ -33,7 +33,7 @@ export const getPublicClient = () => {
 
 let walletClient: any = null;
 export const getWalletClient = () => {
-  if (wsClient === null)
+  if (walletClient === null)
     walletClient = createWalletClient({
       chain: chain,
       transport: http(),

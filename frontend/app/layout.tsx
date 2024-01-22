@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@chakra-ui/react";
-import Provider from "./providers";
-import Navbar from "./navbar";
+import Provider from "@/components/providers";
+import Navbar from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: "Test",

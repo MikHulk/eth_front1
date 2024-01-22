@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { getAddress } from "viem";
 import { Box, Card } from "@chakra-ui/react";
 
-import { getWsClient, addressIsValid, formatBal } from "./eth";
-import InputGroup from "./inputs";
+import { getWsClient, addressIsValid, formatBal } from "@/eth";
+import InputGroup from "@/components/inputs";
 
 export default function Home(): React.ReactNode {
   const [address, setAddress] = useState(
