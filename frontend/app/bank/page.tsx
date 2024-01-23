@@ -1,9 +1,10 @@
 "use client";
 
+import NextLink from "next/link";
 import { useState, useEffect } from "react";
 import { parseEther } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { Box, Button, Card, Heading } from "@chakra-ui/react";
+import { Box, Button, Card, Heading, Link } from "@chakra-ui/react";
 
 import { bankAbi } from "./abi";
 import InputGroup from "@/components/inputs";
@@ -15,22 +16,24 @@ import {
   getWalletClient,
 } from "@/eth";
 
+const amountRe = /^[0-9]*$/g;
 const wsClient = getWsClient();
 const walletClient = getWalletClient();
-const amountRe = /^[0-9]*$/g;
 
 export default function Bank(): React.ReactNode {
-  const bankAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+  const bankAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const [bankBal, setBankBal] = useState(0);
   const [addr, setAddr] = useState("");
-  const [userAddr, setUserAddr] = useState<(null|string)>(null);
+  const [userAddr, setUserAddr] = useState<null | string>(null);
   const [amount, setAmount] = useState("");
+  const [userBankBal, setUserBankBal] = useState(0);
 
-  function parseAmount(event: any) {
-    let value: string = event.target.value;
+  function parseAmount({
+    target: { value },
+  }: React.ChangeEvent<HTMLInputElement>) {
     if (value.match(amountRe)) setAmount(value);
   }
-  
+
   const getBal = async () => {
     return await wsClient.getBalance({
       address: bankAddress,
@@ -39,19 +42,29 @@ export default function Bank(): React.ReactNode {
 
   useEffect(() => {
     if (addressIsValid(bankAddress))
-      getBal().then((n) => setBankBal(Number(n)), console.log);
+      getBal().then((n) => setBankBal(Number(n)));
   }, []);
 
   useEffect(() => {
-    if (privAddrIsValid(addr)) console.log(addr);
-  }, [addr]);
+    const f = async () => {
+      let value: BigInt = await wsClient.readContract({
+        address: bankAddress,
+        abi: bankAbi,
+        functionName: "getBalanceOfUser",
+        args: [userAddr],
+        enabled: false,
+      });
+      return value;
+    };
+    if (userAddr && addressIsValid(userAddr)) {
+      f().then((n: BigInt) => setUserBankBal(Number(n)), console.error);
+    }
+  }, [userAddr]);
 
   function sendMoney() {
     const send = async () => {
       // @ts-ignore
       const account = privateKeyToAccount(addr);
-      console.log("account", account);
-      setUserAddr(account.address);
       const { request } = await wsClient.simulateContract({
         account,
         address: bankAddress,
@@ -59,17 +72,18 @@ export default function Bank(): React.ReactNode {
         functionName: "sendEthers",
         value: parseEther(amount),
       });
+      setTimeout(() => setUserAddr(account.address), 2000);
       return await walletClient.writeContract(request);
     };
     if (privAddrIsValid(addr)) {
-      send().then(console.log, console.error);
+      send().then();
       setTimeout(function () {
         getBal().then((n) => setBankBal(Number(n)), console.error);
       }, 2000);
       setAddr("");
     }
   }
-  
+
   const inputInvalid = addr.length != 0 && !privAddrIsValid(addr);
   return (
     <Box display="flex" alignItems="center" w="100%" justifyContent="center">
@@ -91,9 +105,19 @@ export default function Bank(): React.ReactNode {
           </Box>
           <p>établissement sis {bankAddress}</p>
           <p>Balance de la bank: {formatBal(bankBal)}</p>
-          { userAddr ? (
-            <Box><p>{userAddr}</p></Box>
-          ) : <Box /> }
+          {userAddr ? (
+            <Box>
+              <p>{userAddr}</p>
+              <p>solde du compte: {formatBal(userBankBal)}</p>
+              <Box display="flex" justifyContent="center">
+                <Link as={NextLink} color="green.100" href={ "/bank/accounts/" + userAddr }>
+                  mon compte
+                </Link>
+              </Box>
+            </Box>
+          ) : (
+            <Box />
+          )}
           <Box mt={3}>
             <InputGroup
               label="Address"
@@ -114,12 +138,7 @@ export default function Bank(): React.ReactNode {
               onChange={parseAmount}
             />
           </Box>
-          <Box
-            display="flex"
-            alignSelf="center"
-            alignItems="center"
-            justifyContent="center"
-          >
+          <Box display="flex" justifyContent="center">
             <Button m={2} onClick={sendMoney}>
               Envoie nous des sous
             </Button>

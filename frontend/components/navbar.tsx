@@ -9,10 +9,11 @@ export default function NavBar(): React.ReactNode {
   const router = useRouter();
   const pathname = usePathname();
   const links = [
-    ["/", "Home"],
-    ["/bank", "Bank"],
-  ].map(([link, title], ind) => {
-    if (link == pathname) {
+    ["/", "Home", /^\/$/g],
+    ["/bank", "Bank", /^\/bank$/g],
+    ["/bank/accounts", "Accounts", /^\/bank\/accounts(\/0x[A-z0-9]{40})?$/g],
+  ].map(([link, title, re], ind) => {
+    if (pathname.match(re)) {
       return (
         <Button
           key={ind}
@@ -21,6 +22,7 @@ export default function NavBar(): React.ReactNode {
           borderBottomColor="red"
           borderBottomWidth="1px"
           borderRadius="0px"
+          onClick={() => router.push(link)}
         >
           {title}
         </Button>

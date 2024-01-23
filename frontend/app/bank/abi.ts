@@ -53,4 +53,4 @@ export const bankAbi = [
     name: "Bank__WithdrawFailed",
     inputs: [],
   },
-] as const;
+];
