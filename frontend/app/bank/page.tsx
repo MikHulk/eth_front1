@@ -40,6 +40,11 @@ export default function Bank(): React.ReactNode {
     });
   };
 
+  const clean = () => {
+    setAddr("");
+    setAmount("");
+  }
+
   useEffect(() => {
     if (addressIsValid(bankAddress))
       getBal().then((n) => setBankBal(Number(n)));
@@ -80,7 +85,30 @@ export default function Bank(): React.ReactNode {
       setTimeout(function () {
         getBal().then((n) => setBankBal(Number(n)), console.error);
       }, 2000);
-      setAddr("");
+      clean();
+    }
+  }
+
+  function withdrawMoney() {
+    const send = async () => {
+      // @ts-ignore
+      const account = privateKeyToAccount(addr);
+      const { request } = await wsClient.simulateContract({
+        account,
+        address: bankAddress,
+        abi: bankAbi,
+        functionName: "withdraw",
+        args: [parseEther(amount)],
+      });
+      setTimeout(() => setUserAddr(account.address), 2000);
+      return await walletClient.writeContract(request);
+    };
+    if (privAddrIsValid(addr)) {
+      send().then();
+      setTimeout(function () {
+        getBal().then((n) => setBankBal(Number(n)), console.error);
+      }, 5000);
+      clean();
     }
   }
 
@@ -141,6 +169,11 @@ export default function Bank(): React.ReactNode {
           <Box display="flex" justifyContent="center">
             <Button m={2} onClick={sendMoney}>
               Envoie nous des sous
+            </Button>
+          </Box>
+          <Box display="flex" justifyContent="center">
+            <Button m={2} onClick={withdrawMoney}>
+              Retire tes sous batard
             </Button>
           </Box>
         </Box>
